@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniMind — Neural·AI Interface 2050</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amber: #e8a020;
+    --amber-dim: #a06010;
+    --amber-glow: #ffcc44;
+    --cyan: #00d4ff;
+    --cyan-dim: #007a99;
+    --deep: #0e1520;
+    --panel: #18203a;
+    --panel2: #1e2844;
+    --text: #d8ddee;
+    --text-dim: #7a8aaa;
+    --red-warn: #ff3333;
+    --green-ok: #00ff88;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.07) 2px,
+      rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── GRAIN ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1, h2, h3, .brand { font-family: 'Orbitron', sans-serif; letter-spacing: 0.08em; }
+  .mono { font-family: 'Share Tech Mono', monospace; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: linear-gradient(180deg, rgba(14,21,32,0.95) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(232,160,32,0.15);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-shadow: 0 0 20px rgba(232,160,32,0.6);
+  }
+  .nav-logo span { color: var(--cyan); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.3s, text-shadow 0.3s;
+  }
+  .nav-links a:hover { color: var(--amber); text-shadow: 0 0 12px var(--amber); }
+  .nav-cta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--deep);
+    background: var(--amber);
+    border: none;
+    padding: 10px 22px;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+  .nav-cta:hover { background: var(--amber-glow); box-shadow: 0 0 24px var(--amber); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+    padding: 120px 48px 80px;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(232,160,32,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,160,32,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridDrift 30s linear infinite;
+  }
+  @keyframes gridDrift {
+    from { background-position: 0 0; }
+    to { background-position: 60px 60px; }
+  }
+
+  .hero-vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(14,21,32,0.85) 100%);
+  }
+
+  .hero-content { position: relative; text-align: center; max-width: 860px; }
+
+  .hero-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: 0.06em;
+    color: #fff;
+    text-shadow: 0 0 60px rgba(232,160,32,0.4);
+    animation: fadeUp 1s ease 0.15s both;
+  }
+
+  .hero-title .omni { color: var(--amber); text-shadow: 0 0 40px rgba(232,160,32,0.8), 0 0 100px rgba(232,160,32,0.3); }
+  .hero-title .mind { color: #fff; }
+
+  .hero-tagline {
+    margin-top: 24px;
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .hero-tagline strong { color: var(--cyan); font-weight: 600; }
+
+  .hero-sub {
+    margin-top: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: #3a4060;
+    letter-spacing: 0.15em;
+    animation: fadeUp 1s ease 0.45s both;
+  }
+
+  .hero-cta-row {
+    display: flex; gap: 18px; justify-content: center; margin-top: 44px;
+    animation: fadeUp 1s ease 0.6s both;
+  }
+
+  .btn-primary {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--deep);
+    background: var(--amber);
+    border: none;
+    padding: 16px 36px;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: box-shadow 0.3s, transform 0.2s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 40px var(--amber), 0 0 80px rgba(232,160,32,0.3); transform: translateY(-2px); }
+
+  .btn-secondary {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    background: transparent;
+    border: 1px solid var(--cyan);
+    padding: 16px 36px;
+    cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: box-shadow 0.3s, background 0.3s, transform 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(0,212,255,0.08); box-shadow: 0 0 24px rgba(0,212,255,0.4); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 60px; justify-content: center; margin-top: 64px;
+    animation: fadeUp 1s ease 0.75s both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem; font-weight: 900;
+    color: var(--amber);
+    text-shadow: 0 0 20px rgba(232,160,32,0.6);
+    display: block;
+  }
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 48px; margin: 0 auto; max-width: 1100px;
+  }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(232,160,32,0.3), transparent); }
+  .divider-icon { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--amber-dim); letter-spacing: 0.2em; }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    color: var(--cyan-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .section-title .accent { color: var(--amber); }
+
+  .section-body { color: var(--text-dim); max-width: 560px; font-size: 1.05rem; line-height: 1.8; }
+
+  /* ── PRODUCT SECTION ── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 60px;
+  }
+
+  .product-visual {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid rgba(232,160,32,0.2);
+    padding: 40px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 380px;
+    overflow: hidden;
+  }
+  .product-visual::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(232,160,32,0.06) 0%, transparent 70%);
+  }
+  .corner {
+    position: absolute;
+    width: 18px; height: 18px;
+    border-color: var(--amber);
+    border-style: solid;
+  }
+  .corner-tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+  .corner-tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+  .corner-br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+  .visual-label {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── CHIP SVG ── */
+  .chip-svg { animation: chipPulse 4s ease-in-out infinite; }
+  @keyframes chipPulse {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(232,160,32,0.4)); }
+    50% { filter: drop-shadow(0 0 20px rgba(232,160,32,0.9)) drop-shadow(0 0 40px rgba(0,212,255,0.3)); }
+  }
+
+  /* ── NEURAL SVG ── */
+  .neural-node { animation: nodePulse 2s ease-in-out infinite; }
+  .neural-node:nth-child(2n) { animation-delay: 0.5s; }
+  .neural-node:nth-child(3n) { animation-delay: 1s; }
+  @keyframes nodePulse {
+    0%, 100% { opacity: 0.5; r: 5; }
+    50% { opacity: 1; r: 8; }
+  }
+  .neural-line { animation: lineFlow 3s linear infinite; }
+  @keyframes lineFlow {
+    0% { stroke-dashoffset: 200; opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0.3; }
+  }
+
+  /* ── PRODUCT SPECS ── */
+  .spec-list { list-style: none; margin-top: 32px; display: flex; flex-direction: column; gap: 14px; }
+  .spec-item {
+    display: flex; align-items: center; gap: 16px;
+    border-left: 2px solid rgba(232,160,32,0.3);
+    padding-left: 16px;
+  }
+  .spec-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+    min-width: 140px;
+  }
+  .spec-val { font-size: 0.95rem; color: var(--text-dim); }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 56px;
+  }
+  .step {
+    background: var(--panel);
+    border: 1px solid rgba(232,160,32,0.1);
+    padding: 36px 28px;
+    position: relative;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .step:hover { border-color: rgba(232,160,32,0.4); background: var(--panel2); }
+  .step-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: rgba(232,160,32,0.12);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .step h3 { font-size: 1rem; color: var(--amber); margin-bottom: 10px; letter-spacing: 0.05em; }
+  .step p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.7; }
+  .step-arrow {
+    position: absolute; top: 50%; right: -14px;
+    transform: translateY(-50%);
+    color: var(--amber-dim); font-size: 1.2rem; z-index: 2;
+  }
+
+  /* ── SAFETY ── */
+  .safety-wrapper {
+    background: var(--panel);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .safety-wrapper::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  }
+  .safety-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 10px 20px;
+    margin-bottom: 32px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .safety-badge-dot { width: 8px; height: 8px; background: var(--green-ok); border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+  .safety-badge span { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--green-ok); }
+
+  .safety-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  .safety-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(0,212,255,0.1);
+    padding: 32px 28px;
+    transition: border-color 0.3s;
+  }
+  .safety-card:hover { border-color: rgba(0,212,255,0.35); }
+  .safety-icon { font-size: 1.8rem; margin-bottom: 16px; }
+  .safety-card h3 { font-size: 0.95rem; color: var(--cyan); margin-bottom: 10px; }
+  .safety-card p { font-size: 0.86rem; color: var(--text-dim); line-height: 1.7; }
+
+  /* ── COMPLIANCE BAR ── */
+  .compliance {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 44px;
+  }
+  .comp-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px 14px;
+    text-transform: uppercase;
+  }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; }
+  .testimonial {
+    background: var(--panel);
+    border: 1px solid rgba(232,160,32,0.1);
+    padding: 36px 30px;
+    position: relative;
+  }
+  .testimonial::before {
+    content: '"';
+    position: absolute; top: 16px; left: 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: 3rem;
+    color: rgba(232,160,32,0.15);
+    line-height: 1;
+  }
+  .testimonial p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.75; font-style: italic; }
+  .testimonial-author { margin-top: 20px; }
+  .t-name { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--amber); letter-spacing: 0.1em; display: block; }
+  .t-role { font-size: 0.75rem; color: var(--text-dim); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(232,160,32,0.05) 0%, rgba(0,212,255,0.05) 100%);
+    border: 1px solid rgba(232,160,32,0.15);
+    padding: 80px 48px;
+    position: relative;
+    overflow: hidden;
+    max-width: none;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), transparent);
+  }
+
+  .cta-title { font-size: clamp(1.6rem, 4vw, 3rem); font-weight: 900; color: #fff; margin-bottom: 16px; }
+  .cta-sub { color: var(--text-dim); font-size: 1.05rem; max-width: 540px; margin: 0 auto 44px; }
+
+  .input-row { display: flex; gap: 0; max-width: 480px; margin: 0 auto; }
+  .cta-input {
+    flex: 1;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(232,160,32,0.3);
+    border-right: none;
+    color: var(--text);
+    padding: 14px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    outline: none;
+    letter-spacing: 0.05em;
+  }
+  .cta-input::placeholder { color: var(--text-dim); }
+  .cta-input:focus { border-color: var(--amber); }
+  .cta-submit {
+    background: var(--amber);
+    border: none; color: var(--deep);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 14px 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: box-shadow 0.3s;
+  }
+  .cta-submit:hover { box-shadow: 0 0 24px var(--amber); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(232,160,32,0.1);
+    padding: 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 900; color: var(--amber-dim); letter-spacing: 0.15em; }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--text-dim); text-decoration: none; letter-spacing: 0.15em; text-transform: uppercase; }
+  .footer-links a:hover { color: var(--amber); }
+  .footer-copy { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: #2a3050; letter-spacing: 0.1em; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--amber-dim); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 64px 24px; }
+    .product-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .safety-grid { grid-template-columns: 1fr; }
+    .testimonials { grid-template-columns: 1fr; }
+    .hero-stats { gap: 32px; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">OMNI<span>MIND</span></div>
+  <ul class="nav-links">
+    <li><a href="#product">Product</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#safety">Safety</a></li>
+    <li><a href="#testimonials">Testimonials</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location.href='omnimind-register.html'">Request Access</button>
+</nav>
+
+
+<!-- HERO -->
+<section class="hero" style="max-width:none;padding-left:0;padding-right:0;">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">// EST. 2050 // NEURAL·AI INTERFACE v4.1 //</p>
+    <h1 class="hero-title">
+      <span class="omni">OMNI</span><span class="mind">MIND</span>
+    </h1>
+    <p class="hero-tagline">The world's first <strong>Neural–AI Interface</strong>.<br>Think faster. Know everything. Become more.</p>
+    <p class="hero-sub">CHIP-INSERTION · CLOUD AGI · CORTEX SYNCHRONIZATION</p>
+    <div class="hero-cta-row">
+      <button class="btn-primary" onclick="window.location.href='omnimind-register.html'">Begin Registration</button>
+      <button class="btn-secondary" onclick="window.open('https://www.youtube.com/watch?v=4YlsM5kdS9s','_blank')">Watch Procedure</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">4.2M+</span>
+        <span class="stat-label">Active Minds</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">0.4ms</span>
+        <span class="stat-label">Latency</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">99.97%</span>
+        <span class="stat-label">Safety Index</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">∞</span>
+        <span class="stat-label">Cognitive Ceiling</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-icon">◈ PRODUCT ◈</div><div class="divider-line"></div></div>
+
+<!-- PRODUCT -->
+<section id="product">
+  <p class="section-label fade-in">// Core Technology</p>
+  <h2 class="section-title fade-in">The <span class="accent">OmniChip™</span><br>Neural Interface</h2>
+  <p class="section-body fade-in">A sub-millimeter neuro-synthetic chip, surgically implanted in the prefrontal cortex, forming a live bidirectional bridge between the human brain and OmniMind's Generative AGI cloud. Cognition, amplified.</p>
+
+  <div class="product-grid">
+    <!-- CHIP VISUAL -->
+    <div class="product-visual fade-in">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <!-- Chip Insertion Illustration -->
+      <svg class="chip-svg" width="260" height="280" viewBox="0 0 260 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Brain silhouette -->
+        <ellipse cx="130" cy="100" rx="90" ry="75" fill="none" stroke="#e8a02022" stroke-width="1"/>
+        <path d="M60 110 C55 80 75 55 100 50 C110 47 120 48 130 50 C140 48 150 47 160 50 C185 55 205 80 200 110 C205 130 198 155 180 165 C170 170 160 168 150 170 C145 175 140 185 130 185 C120 185 115 175 110 170 C100 168 90 170 80 165 C62 155 55 130 60 110Z" fill="#0a0f1e" stroke="#e8a020" stroke-width="1.5" opacity="0.7"/>
+        <!-- Brain fold lines -->
+        <path d="M85 80 Q100 70 115 80 Q125 90 110 100" stroke="#e8a02033" stroke-width="1" fill="none"/>
+        <path d="M145 75 Q160 68 175 78 Q180 90 165 95" stroke="#e8a02033" stroke-width="1" fill="none"/>
+        <path d="M90 115 Q105 108 118 118" stroke="#e8a02033" stroke-width="1" fill="none"/>
+        <path d="M142 112 Q158 105 172 115" stroke="#e8a02033" stroke-width="1" fill="none"/>
+        <path d="M95 140 Q110 133 125 140" stroke="#e8a02033" stroke-width="1" fill="none"/>
+        <path d="M135 140 Q150 133 165 140" stroke="#e8a02033" stroke-width="1" fill="none"/>
+
+        <!-- Insertion tool -->
+        <line x1="130" y1="5" x2="130" y2="95" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4 3" opacity="0.7"/>
+        <polygon points="122,90 138,90 130,105" fill="#00d4ff" opacity="0.9"/>
+        <!-- Tool handle -->
+        <rect x="122" y="0" width="16" height="30" rx="3" fill="#0a0f1e" stroke="#00d4ff" stroke-width="1.5"/>
+        <line x1="125" y1="8" x2="135" y2="8" stroke="#00d4ff" stroke-width="1" opacity="0.6"/>
+        <line x1="125" y1="13" x2="135" y2="13" stroke="#00d4ff" stroke-width="1" opacity="0.6"/>
+        <line x1="125" y1="18" x2="135" y2="18" stroke="#00d4ff" stroke-width="1" opacity="0.6"/>
+
+        <!-- The Chip -->
+        <rect x="112" y="93" width="36" height="28" rx="3" fill="#0d1428" stroke="#e8a020" stroke-width="2"/>
+        <rect x="116" y="97" width="28" height="20" rx="1" fill="#050810" stroke="#e8a02055" stroke-width="1"/>
+        <!-- Chip grid lines -->
+        <line x1="121" y1="97" x2="121" y2="117" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="126" y1="97" x2="126" y2="117" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="131" y1="97" x2="131" y2="117" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="136" y1="97" x2="136" y2="117" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="141" y1="97" x2="141" y2="117" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="116" y1="102" x2="144" y2="102" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="116" y1="107" x2="144" y2="107" stroke="#e8a02033" stroke-width="0.5"/>
+        <line x1="116" y1="112" x2="144" y2="112" stroke="#e8a02033" stroke-width="0.5"/>
+        <!-- Chip pins -->
+        <rect x="108" y="98" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="108" y="103" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="108" y="108" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="108" y="113" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="148" y="98" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="148" y="103" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="148" y="108" width="4" height="2" rx="1" fill="#e8a020"/>
+        <rect x="148" y="113" width="4" height="2" rx="1" fill="#e8a020"/>
+
+        <!-- Signal waves from chip -->
+        <circle cx="130" cy="107" r="8" fill="none" stroke="#e8a020" stroke-width="1" opacity="0.8">
+          <animate attributeName="r" values="8;30" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="130" cy="107" r="8" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.6">
+          <animate attributeName="r" values="8;30" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Data flow lines downward from brain -->
+        <line x1="100" y1="175" x2="80" y2="220" stroke="#e8a020" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+        <line x1="130" y1="185" x2="130" y2="240" stroke="#e8a020" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+        <line x1="160" y1="175" x2="180" y2="220" stroke="#e8a020" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+
+        <!-- Cloud node at bottom -->
+        <rect x="60" y="220" width="140" height="50" rx="6" fill="#0a0f1e" stroke="#e8a020" stroke-width="1.5" opacity="0.8"/>
+        <text x="130" y="241" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00d4ff" letter-spacing="2">OMNIMIND AGI CLOUD</text>
+        <text x="130" y="257" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6" fill="#e8a020" letter-spacing="1">v4.1 · GENERATIVE · INFINITE</text>
+        <!-- Cloud blip -->
+        <circle cx="74" cy="248" r="3" fill="#00ff88">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+
+      <div class="visual-label">FIG. 01 — OMNICHIP™ INSERTION PROCEDURE</div>
+    </div>
+
+    <!-- SPECS -->
+    <div class="fade-in">
+      <ul class="spec-list">
+        <li class="spec-item"><span class="spec-key">Chip Size</span><span class="spec-val">0.4mm × 0.4mm · 1,024 neural electrodes</span></li>
+        <li class="spec-item"><span class="spec-key">Bandwidth</span><span class="spec-val">40 Gbps bidirectional neural link</span></li>
+        <li class="spec-item"><span class="spec-key">Power</span><span class="spec-val">Bio-kinetic self-charging · 12 year lifespan</span></li>
+        <li class="spec-item"><span class="spec-key">Interface</span><span class="spec-val">OmniMind AGI Cloud · 200 exaFLOP/s</span></li>
+        <li class="spec-item"><span class="spec-key">Latency</span><span class="spec-val">0.4ms cortex-to-cloud round-trip</span></li>
+        <li class="spec-item"><span class="spec-key">Compatibility</span><span class="spec-val">All human cortical architectures</span></li>
+        <li class="spec-item"><span class="spec-key">Material</span><span class="spec-val">Bio-neutral graphene / neuro-polymer</span></li>
+        <li class="spec-item"><span class="spec-key">Encryption</span><span class="spec-val">1024-bit Quantum-Lattice · Zero-knowledge</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- NEURAL INTERFACE VISUAL -->
+  <div class="product-grid" style="margin-top:60px;">
+    <div class="fade-in" style="padding-right:20px;">
+      <p class="section-label">// Neural–AGI Link</p>
+      <h2 class="section-title">Real-Time <span class="accent">Cognitive</span><br>Synchronization</h2>
+      <p class="section-body">The OmniChip doesn't just transmit data — it synchronizes your thought patterns with a living, generative cloud intelligence. Language. Memory. Spatial reasoning. Mathematics. All augmented in real time.</p>
+      <ul class="spec-list" style="margin-top:28px;">
+        <li class="spec-item"><span class="spec-key">Memory</span><span class="spec-val">Infinite recall · Perfect fidelity</span></li>
+        <li class="spec-item"><span class="spec-key">Language</span><span class="spec-val">All 7,000+ languages · Instant translation</span></li>
+        <li class="spec-item"><span class="spec-key">Processing</span><span class="spec-val">10,000× baseline human cognition</span></li>
+        <li class="spec-item"><span class="spec-key">Creativity</span><span class="spec-val">Generative ideation · Cross-domain synthesis</span></li>
+      </ul>
+    </div>
+
+    <!-- NEURAL INTERFACE SVG -->
+    <div class="product-visual fade-in">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <svg width="280" height="300" viewBox="0 0 280 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Central brain node -->
+        <circle cx="140" cy="120" r="40" fill="#0a0f1e" stroke="#e8a020" stroke-width="2"/>
+        <circle cx="140" cy="120" r="28" fill="#050810" stroke="#e8a02055" stroke-width="1"/>
+        <text x="140" y="115" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#e8a020" letter-spacing="1">CORTEX</text>
+        <text x="140" y="127" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00d4ff" letter-spacing="1">INTERFACE</text>
+        <!-- Pulse rings -->
+        <circle cx="140" cy="120" r="40" fill="none" stroke="#e8a020" stroke-width="1">
+          <animate attributeName="r" values="40;70" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="140" cy="120" r="40" fill="none" stroke="#00d4ff" stroke-width="1">
+          <animate attributeName="r" values="40;70" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Neural nodes surrounding brain -->
+        <!-- Top -->
+        <circle cx="140" cy="30" r="16" fill="#0a0f1e" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="140" y="27" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#00d4ff">MEMORY</text>
+        <text x="140" y="36" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#00d4ff">VAULT</text>
+        <line x1="140" y1="46" x2="140" y2="80" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4 2">
+          <animate attributeName="stroke-dashoffset" values="0;-12" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Bottom -->
+        <circle cx="140" cy="220" r="16" fill="#0a0f1e" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="140" y="217" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#00d4ff">AGI</text>
+        <text x="140" y="226" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#00d4ff">CLOUD</text>
+        <line x1="140" y1="160" x2="140" y2="204" stroke="#00d4ff" stroke-width="1" stroke-dasharray="4 2">
+          <animate attributeName="stroke-dashoffset" values="0;12" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Left -->
+        <circle cx="40" cy="120" r="16" fill="#0a0f1e" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="40" y="117" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#e8a020">LANG</text>
+        <text x="40" y="126" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#e8a020">ENGINE</text>
+        <line x1="56" y1="120" x2="100" y2="120" stroke="#e8a020" stroke-width="1" stroke-dasharray="4 2">
+          <animate attributeName="stroke-dashoffset" values="0;12" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Right -->
+        <circle cx="240" cy="120" r="16" fill="#0a0f1e" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="240" y="117" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#e8a020">LOGIC</text>
+        <text x="240" y="126" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#e8a020">CORE</text>
+        <line x1="180" y1="120" x2="224" y2="120" stroke="#e8a020" stroke-width="1" stroke-dasharray="4 2">
+          <animate attributeName="stroke-dashoffset" values="0;-12" dur="1s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Top-left -->
+        <circle cx="68" cy="55" r="12" fill="#0a0f1e" stroke="#e8a020" stroke-width="1"/>
+        <text x="68" y="52" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#e8a020">VISUAL</text>
+        <text x="68" y="60" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#e8a020">PROC</text>
+        <line x1="78" y1="64" x2="108" y2="88" stroke="#e8a02066" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- Top-right -->
+        <circle cx="214" cy="55" r="12" fill="#0a0f1e" stroke="#00d4ff" stroke-width="1"/>
+        <text x="214" y="52" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#00d4ff">MATH</text>
+        <text x="214" y="60" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#00d4ff">SYN</text>
+        <line x1="204" y1="64" x2="172" y2="88" stroke="#00d4ff66" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- Bottom-left -->
+        <circle cx="68" cy="195" r="12" fill="#0a0f1e" stroke="#00d4ff" stroke-width="1"/>
+        <text x="68" y="192" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#00d4ff">EMOT</text>
+        <text x="68" y="200" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#00d4ff">MAP</text>
+        <line x1="78" y1="186" x2="108" y2="155" stroke="#00d4ff66" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- Bottom-right -->
+        <circle cx="214" cy="195" r="12" fill="#0a0f1e" stroke="#e8a020" stroke-width="1"/>
+        <text x="214" y="192" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#e8a020">CREAT</text>
+        <text x="214" y="200" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#e8a020">GEN</text>
+        <line x1="204" y1="186" x2="172" y2="155" stroke="#e8a02066" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- Traveling data dots -->
+        <circle cx="0" cy="0" r="3" fill="#00d4ff">
+          <animateMotion dur="1.5s" repeatCount="indefinite">
+            <mpath href="#pathTop"/>
+          </animateMotion>
+        </circle>
+        <circle cx="0" cy="0" r="3" fill="#e8a020">
+          <animateMotion dur="1.8s" repeatCount="indefinite" begin="0.5s">
+            <mpath href="#pathLeft"/>
+          </animateMotion>
+        </circle>
+
+        <defs>
+          <path id="pathTop" d="M140,46 L140,80"/>
+          <path id="pathLeft" d="M56,120 L100,120"/>
+        </defs>
+
+        <!-- Status bar -->
+        <rect x="30" y="270" width="220" height="20" rx="2" fill="#0a0f1e" stroke="#e8a02033" stroke-width="1"/>
+        <rect x="32" y="272" width="80" height="16" rx="1" fill="#00ff8833"/>
+        <text x="140" y="283" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6" fill="#00ff88" letter-spacing="2">● SYNCHRONIZATION ACTIVE</text>
+      </svg>
+
+      <div class="visual-label">FIG. 02 — NEURAL–AGI COGNITIVE NETWORK MAP</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-icon">◈ PROCESS ◈</div><div class="divider-line"></div></div>
+
+<!-- HOW IT WORKS -->
+<section id="process">
+  <p class="section-label fade-in">// Procedure</p>
+  <h2 class="section-title fade-in">Four Steps to <span class="accent">Augmented</span> Cognition</h2>
+  <div class="steps">
+    <div class="step fade-in">
+      <div class="step-num">01</div>
+      <h3>Neural Mapping</h3>
+      <p>A 90-minute non-invasive cortical scan creates a unique 3D neural map of your individual brain architecture. No two minds are the same.</p>
+      <span class="step-arrow">›</span>
+    </div>
+    <div class="step fade-in" style="transition-delay:0.1s">
+      <div class="step-num">02</div>
+      <h3>Chip Calibration</h3>
+      <p>Your OmniChip is custom-configured at the molecular level to your unique cortical map — 1,024 electrode placements precisely calculated.</p>
+      <span class="step-arrow">›</span>
+    </div>
+    <div class="step fade-in" style="transition-delay:0.2s">
+      <div class="step-num">03</div>
+      <h3>Micro-Insertion</h3>
+      <p>A 12-minute robotic micro-surgery inserts the chip into the prefrontal cortex. Zero incisions. Full recovery within 4 hours. Zero downtime.</p>
+      <span class="step-arrow">›</span>
+    </div>
+    <div class="step fade-in" style="transition-delay:0.3s">
+      <div class="step-num">04</div>
+      <h3>AGI Sync</h3>
+      <p>Your OmniChip pairs with the cloud AGI in real time. Within 24 hours, cognitive augmentation reaches full operational capacity.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-icon">◈ SAFETY ◈</div><div class="divider-line"></div></div>
+
+<!-- SAFETY -->
+<section id="safety" style="max-width:none;padding:80px 48px;">
+  <div class="safety-wrapper">
+    <div style="max-width:1000px;margin:0 auto;">
+      <div class="safety-badge">
+        <div class="safety-badge-dot"></div>
+        <span>ISO-2050 Neuro-Safety Certified · WHO Neural Ethics Board Approved</span>
+      </div>
+      <p class="section-label">// Safety Guarantee</p>
+      <h2 class="section-title fade-in">Your Mind.<br>Your <span class="accent">Sovereign</span> Territory.</h2>
+      <p class="section-body fade-in">OmniMind was built on one immovable principle: your consciousness is yours alone. Our chip is a bridge, never a cage. Every safety system has been stress-tested to global neuro-ethical standards.</p>
+
+      <div class="safety-grid">
+        <div class="safety-card fade-in">
+          <div class="safety-icon">🔐</div>
+          <h3>Quantum Encrypted Privacy</h3>
+          <p>All neural data is encrypted end-to-end using 1024-bit quantum-lattice cryptography. OmniMind cannot read, store, or sell your thoughts. Ever.</p>
+        </div>
+        <div class="safety-card fade-in" style="transition-delay:0.1s">
+          <div class="safety-icon">🧬</div>
+          <h3>Bio-Inert Materials</h3>
+          <p>The OmniChip is fabricated from certified bio-neutral graphene and neuro-polymer compounds. Zero inflammation. Zero rejection risk in 4.2 million implants.</p>
+        </div>
+        <div class="safety-card fade-in" style="transition-delay:0.2s">
+          <div class="safety-icon">⚡</div>
+          <h3>Emergency Disconnect</h3>
+          <p>A hardware-level kill switch allows instant AGI disconnection with a thought-command. The chip goes into full passive mode. You remain in complete control.</p>
+        </div>
+        <div class="safety-card fade-in" style="transition-delay:0.3s">
+          <div class="safety-icon">🛡️</div>
+          <h3>Identity Immutability</h3>
+          <p>OmniMind's Cognitive Integrity Protocol continuously monitors for any unauthorized modification of personality, memory, or identity. Tamper-proof by design.</p>
+        </div>
+        <div class="safety-card fade-in" style="transition-delay:0.4s">
+          <div class="safety-icon">🔄</div>
+          <h3>Full Reversibility</h3>
+          <p>The OmniChip can be fully removed at any time with the same 12-minute robotic procedure. Complete neural restoration guaranteed. No residual effects.</p>
+        </div>
+        <div class="safety-card fade-in" style="transition-delay:0.5s">
+          <div class="safety-icon">🌐</div>
+          <h3>Sovereign Data Rights</h3>
+          <p>Under the 2049 Neural Rights Convention, all cognitive data is legally your property. OmniMind operates under full regulatory compliance across 190 nations.</p>
+        </div>
+      </div>
+
+      <div class="compliance fade-in" style="margin-top:44px;">
+        <div class="comp-badge">WHO Neural Ethics Board</div>
+        <div class="comp-badge">ISO-2050:Neural</div>
+        <div class="comp-badge">UN Cognitive Rights Act 2048</div>
+        <div class="comp-badge">NeuroFDA Approved</div>
+        <div class="comp-badge">EU Brain Data Regulation</div>
+        <div class="comp-badge">IEEE-7010 Compliant</div>
+        <div class="comp-badge">Zero-Knowledge Architecture</div>
+        <div class="comp-badge">Quantum Privacy Certified</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-icon">◈ TESTIMONIALS ◈</div><div class="divider-line"></div></div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <p class="section-label fade-in">// From the Augmented</p>
+  <h2 class="section-title fade-in">Voices of the <span class="accent">Connected</span></h2>
+  <div class="testimonials">
+    <div class="testimonial fade-in">
+      <p>Within a week of the procedure, I was solving mathematical problems that would have taken my former self months. The AGI doesn't think for you — it thinks with you.</p>
+      <div class="testimonial-author">
+        <span class="t-name">DR. YARA SOLANO-KESH</span>
+        <span class="t-role">Quantum Physicist · OmniMind User since 2048</span>
+      </div>
+    </div>
+    <div class="testimonial fade-in" style="transition-delay:0.15s">
+      <p>I was the most skeptical person in my lab. Eighteen months later, I am composing music in forty languages simultaneously. The chip is invisible. The results are not.</p>
+      <div class="testimonial-author">
+        <span class="t-name">AXEL VÖNRATH</span>
+        <span class="t-role">Composer & Neuro-Artist · Berlin</span>
+      </div>
+    </div>
+    <div class="testimonial fade-in" style="transition-delay:0.3s">
+      <p>The safety protocols gave me confidence. The privacy guarantee gave me trust. The experience gave me a life I could not have imagined. I am still entirely myself — only more so.</p>
+      <div class="testimonial-author">
+        <span class="t-name">PRIYA NARASIMHAN</span>
+        <span class="t-role">Bioethics Attorney · Singapore</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" style="padding:80px 48px;">
+  <p class="section-label" style="justify-content:center;display:flex;margin-bottom:16px;">// Registration Open · 2050</p>
+  <h2 class="cta-title fade-in">Ready to <span style="color:var(--amber)">Evolve?</span></h2>
+  <p class="cta-sub fade-in">Join 4.2 million minds already connected to the future. Registration is open globally. Consultation is free.</p>
+  <div class="input-row fade-in">
+    <input class="cta-input" type="email" placeholder="your.neural@id · enter email">
+    <button class="cta-submit">Enlist</button>
+  </div>
+  <p class="mono" style="margin-top:20px;font-size:0.62rem;color:#2a3050;letter-spacing:0.15em;">
+    CONSULTATION FREE · NO OBLIGATION · PRIVACY GUARANTEED · ALL DATA ENCRYPTED
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">OMNI<span style="color:var(--cyan-dim)">MIND</span> © 2050</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Neural Ethics</a>
+    <a href="#">Clinical Data</a>
+    <a href="#">Careers</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">OMNIMIND CORP · REGISTERED UNDER THE NEURAL RIGHTS CONVENTION 2049 · ALL MINDS PROTECTED</div>
+</footer>
+
+<script>
+  // Intersection observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Glitch effect on logo
+  const logo = document.querySelector('.nav-logo');
+  setInterval(() => {
+    logo.style.textShadow = `${Math.random()*4-2}px 0 rgba(0,212,255,0.8), ${Math.random()*4-2}px 0 rgba(232,160,32,0.8)`;
+    setTimeout(() => {
+      logo.style.textShadow = '0 0 20px rgba(232,160,32,0.6)';
+    }, 80);
+  }, 4000);
+</script>
+</body>
+</html>
